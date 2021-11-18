@@ -1,7 +1,8 @@
 name: clip
 description: .
 version: 1.1.5
-homepage: https://github.com/hsul4n/dart-clip
+homepage: https://github.com/MoaidAlrazhy/dart-clip
+
 
 environment:
   sdk: ">2.12.0 <3.0.0"

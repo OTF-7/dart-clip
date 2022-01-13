@@ -1,14 +1,14 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:clip/clip.dart';
 import 'package:clip/l10n/clip_localizations.dart';
 import 'package:clip/src/widgets/gallery_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:clip/clip.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 enum ClipOption {
   zoom,
@@ -31,6 +31,7 @@ class ImageClipField extends ClipField<XFile> {
     List<ImageSource> sources = const [ImageSource.camera, ImageSource.gallery],
     List<ClipOption> options = const [ClipOption.zoom, ClipOption.delete],
     bool? enabled,
+    Map<String, String>? initialImageHeaders,
     InputDecoration? decoration = const InputDecoration(),
     AutovalidateMode? autovalidateMode,
   })  : assert(sources.isNotEmpty),
@@ -41,9 +42,7 @@ class ImageClipField extends ClipField<XFile> {
           initialValue: () async {
             if (initialValue != null) {
               if (initialValue is String) {
-                return DefaultCacheManager()
-                    .getSingleFile(initialValue)
-                    .then((value) => XFile(value.path));
+                return DefaultCacheManager().getSingleFile(initialValue, headers: initialImageHeaders).then((value) => XFile(value.path));
               } else if (initialValue is Uint8List)
                 return Future.value(XFile(File.fromRawPath(initialValue).path));
               else
@@ -56,9 +55,8 @@ class ImageClipField extends ClipField<XFile> {
           validator: validator,
           enabled: enabled ?? decoration?.enabled ?? true,
           builder: (ClipFieldState<XFile> field) {
-            final InputDecoration effectiveDecoration = (decoration ??
-                    const InputDecoration())
-                .applyDefaults(Theme.of(field.context).inputDecorationTheme);
+            final InputDecoration effectiveDecoration =
+                (decoration ?? const InputDecoration()).applyDefaults(Theme.of(field.context).inputDecorationTheme);
 
             void onChangedHandler(XFile? value) {
               field.didChange(value);
@@ -87,16 +85,10 @@ class ImageClipField extends ClipField<XFile> {
                                 .map(
                                   (source) => ListTile(
                                     leading: Icon(
-                                      source == ImageSource.camera
-                                          ? Icons.photo_camera_outlined
-                                          : Icons.photo_library_outlined,
+                                      source == ImageSource.camera ? Icons.photo_camera_outlined : Icons.photo_library_outlined,
                                     ),
                                     title: Text(
-                                      source == ImageSource.camera
-                                          ? ClipLocalizations.of(context)!
-                                              .camera
-                                          : ClipLocalizations.of(context)!
-                                              .gallery,
+                                      source == ImageSource.camera ? ClipLocalizations.of(context)!.camera : ClipLocalizations.of(context)!.gallery,
                                     ),
                                     onTap: () async {
                                       Navigator.of(field.context).pop();
@@ -123,17 +115,12 @@ class ImageClipField extends ClipField<XFile> {
                               if (options.contains(ClipOption.zoom))
                                 ListTile(
                                   leading: Icon(Icons.zoom_out_map_outlined),
-                                  title:
-                                      Text(ClipLocalizations.of(context)!.zoom),
+                                  title: Text(ClipLocalizations.of(context)!.zoom),
                                   onTap: () {
                                     Navigator.of(context)
                                       ..pop()
                                       ..push(
-                                        MaterialPageRoute(
-                                            builder: (context) => GalleryPage(
-                                                    attachments: [
-                                                      File(field.value!.path)
-                                                    ])),
+                                        MaterialPageRoute(builder: (context) => GalleryPage(attachments: [File(field.value!.path)])),
                                       );
                                   },
                                 ),

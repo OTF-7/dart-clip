@@ -75,7 +75,7 @@ class ImageClipField extends ClipField<XFile> {
               child: GestureDetector(
                 child: builder(field.context, field.value),
                 onTap: () {
-                  if(enabled) {
+                  if(enabled ?? true) {
                     showModalBottomSheet(
                       context: field.context,
                       builder: (BuildContext context) {

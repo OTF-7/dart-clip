@@ -37,35 +37,35 @@ class ImageClipField extends ClipField<XFile> {
   })  : assert(sources.isNotEmpty),
         assert(options.isNotEmpty),
         super(
-          key: key,
-          autovalidateMode: autovalidateMode,
-          initialValue: () async {
-            if (initialValue != null) {
-              if (initialValue is String) {
-                return DefaultCacheManager().getSingleFile(initialValue, headers: initialImageHeaders).then((value) => XFile(value.path));
-              } else if (initialValue is Uint8List)
-                return Future.value(XFile(File.fromRawPath(initialValue).path));
-              else
-                throw UnsupportedError('cant get base64');
+        key: key,
+        autovalidateMode: autovalidateMode,
+        initialValue: () async {
+          if (initialValue != null) {
+            if (initialValue is String) {
+              return DefaultCacheManager().getSingleFile(initialValue, headers: initialImageHeaders).then((value) => XFile(value.path));
+            } else if (initialValue is Uint8List)
+              return Future.value(XFile(File.fromRawPath(initialValue).path));
+            else
+              throw UnsupportedError('cant get base64');
+          }
+
+          return null;
+        },
+        onSaved: onSaved,
+        validator: validator,
+        enabled: enabled ?? decoration?.enabled ?? true,
+        builder: (ClipFieldState<XFile> field) {
+          final InputDecoration effectiveDecoration =
+          (decoration ?? const InputDecoration()).applyDefaults(Theme.of(field.context).inputDecorationTheme);
+
+          void onChangedHandler(XFile? value) {
+            field.didChange(value);
+            if (onChanged != null) {
+              onChanged(value);
             }
+          }
 
-            return null;
-          },
-          onSaved: onSaved,
-          validator: validator,
-          enabled: enabled ?? decoration?.enabled ?? true,
-          builder: (ClipFieldState<XFile> field) {
-            final InputDecoration effectiveDecoration =
-                (decoration ?? const InputDecoration()).applyDefaults(Theme.of(field.context).inputDecorationTheme);
-
-            void onChangedHandler(XFile? value) {
-              field.didChange(value);
-              if (onChanged != null) {
-                onChanged(value);
-              }
-            }
-
-         return IntrinsicWidth(
+          return IntrinsicWidth(
             child: InputDecorator(
               decoration: effectiveDecoration.copyWith(
                 errorText: field.hasError ? field.errorText : null,
@@ -75,7 +75,7 @@ class ImageClipField extends ClipField<XFile> {
               child: GestureDetector(
                 child: builder(field.context, field.value),
                 onTap: () {
-                  if (enabled) {
+                  if(enabled) {
                     showModalBottomSheet(
                       context: field.context,
                       builder: (BuildContext context) {
@@ -125,8 +125,8 @@ class ImageClipField extends ClipField<XFile> {
                                     Navigator.of(context)
                                       ..pop()
                                       ..push(
-                                        MaterialPageRoute(builder: (context) =>
-                                            GalleryPage(attachments: [File(field.value!.path)])),
+                                        MaterialPageRoute(
+                                            builder: (context) => GalleryPage(attachments: [File(field.value!.path)])),
                                       );
                                   },
                                 ),
@@ -155,6 +155,8 @@ class ImageClipField extends ClipField<XFile> {
               ),
             ),
           );
+        },
+      );
 
   @override
   _ImageClipFieldState createState() => _ImageClipFieldState();

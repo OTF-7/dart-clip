@@ -65,16 +65,17 @@ class ImageClipField extends ClipField<XFile> {
               }
             }
 
-            return IntrinsicWidth(
-              child: InputDecorator(
-                decoration: effectiveDecoration.copyWith(
-                  errorText: field.hasError ? field.errorText : null,
-                  isCollapsed: true,
-                  border: InputBorder.none,
-                ),
-                child: GestureDetector(
-                  child: builder(field.context, field.value),
-                  onTap: () {
+         return IntrinsicWidth(
+            child: InputDecorator(
+              decoration: effectiveDecoration.copyWith(
+                errorText: field.hasError ? field.errorText : null,
+                isCollapsed: true,
+                border: InputBorder.none,
+              ),
+              child: GestureDetector(
+                child: builder(field.context, field.value),
+                onTap: () {
+                  if (enabled) {
                     showModalBottomSheet(
                       context: field.context,
                       builder: (BuildContext context) {
@@ -83,12 +84,16 @@ class ImageClipField extends ClipField<XFile> {
                           children: [
                             ...sources
                                 .map(
-                                  (source) => ListTile(
+                                  (source) =>
+                                  ListTile(
                                     leading: Icon(
-                                      source == ImageSource.camera ? Icons.photo_camera_outlined : Icons.photo_library_outlined,
+                                      source == ImageSource.camera ? Icons.photo_camera_outlined : Icons
+                                          .photo_library_outlined,
                                     ),
                                     title: Text(
-                                      source == ImageSource.camera ? ClipLocalizations.of(context)!.camera : ClipLocalizations.of(context)!.gallery,
+                                      source == ImageSource.camera
+                                          ? ClipLocalizations.of(context)!.camera
+                                          : ClipLocalizations.of(context)!.gallery,
                                     ),
                                     onTap: () async {
                                       Navigator.of(field.context).pop();
@@ -109,7 +114,7 @@ class ImageClipField extends ClipField<XFile> {
                                       }).whenComplete(field.onResume);
                                     },
                                   ),
-                                )
+                            )
                                 .toList(),
                             if (field.value != null) ...[
                               if (options.contains(ClipOption.zoom))
@@ -120,7 +125,8 @@ class ImageClipField extends ClipField<XFile> {
                                     Navigator.of(context)
                                       ..pop()
                                       ..push(
-                                        MaterialPageRoute(builder: (context) => GalleryPage(attachments: [File(field.value!.path)])),
+                                        MaterialPageRoute(builder: (context) =>
+                                            GalleryPage(attachments: [File(field.value!.path)])),
                                       );
                                   },
                                 ),
@@ -144,12 +150,11 @@ class ImageClipField extends ClipField<XFile> {
                         );
                       },
                     );
-                  },
-                ),
+                  }
+                },
               ),
-            );
-          },
-        );
+            ),
+          );
 
   @override
   _ImageClipFieldState createState() => _ImageClipFieldState();

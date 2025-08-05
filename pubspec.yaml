@@ -5,7 +5,7 @@ homepage: https://github.com/MoaidAlrazhy/dart-clip
 
 
 environment:
-  sdk: ">2.12.0 <3.0.0"
+  sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -13,7 +13,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  intl: ^0.17.0
+  intl: ^0.20.2
   photo_view: ^0.14.0
   image_picker: ^1.0.7
   flutter_cache_manager: ^3.1.3
